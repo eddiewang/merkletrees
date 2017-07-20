@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 from binascii import hexlify, unhexlify
 from pyblake2 import blake2b
@@ -24,7 +25,7 @@ transactions = [x["id"] for x in data["block"]["transactions"]]
 minerpayoutid = data["block"]["minerpayoutids"][0]
 transactions.insert(0, minerpayoutid)
 # transactions.append(minerpayoutid)
-
+print("Transaction + Mining Outputs", len(transactions))
 arbtx = coinb1 + extranonce1 + extranonce2 + coinb2
 
 result = []
@@ -40,7 +41,6 @@ def merkle(transactions):
         hashedResult = blake2b(b'\x01' + t1 + t2, digest_size=32).digest()
         hashHex = hexlify(hashedResult).encode('ascii')
         temp.append(hashHex)
-
     # If odd, simply append the transaction value...
     # the way the merkle trees work in Sia is that orphan leaves
     # are not duplicated or hashed multiple times
@@ -49,7 +49,6 @@ def merkle(transactions):
     #   ┌──┴──┐   │    ┌──┴──┐     │      ┌──┴──┐     ┌──┴──┐
     # ┌─┴─┐ ┌─┴─┐ │  ┌─┴─┐ ┌─┴─┐ ┌─┴─┐  ┌─┴─┐ ┌─┴─┐ ┌─┴─┐   │
     #    (5-leaf)         (6-leaf)             (7-leaf)
-
     if len(transactions) % 2 == 1:
         t3 = transactions[len(transactions) - 1]
         temp.append(t3)
